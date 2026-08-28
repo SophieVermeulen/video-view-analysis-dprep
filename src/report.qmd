@@ -1,0 +1,86 @@
+---
+title: "Video view analysis"
+format: html
+knitr:
+  opts_knit:
+    root.dir: ".."
+---
+
+# Video view analysis
+
+This report practices Quarto, `dplyr` aggregation, and a reproducible workflow
+on the `video_view.csv` dataset. Text and code live in one file.
+
+## Load the data
+
+We use the local file if it exists, and download it once otherwise.
+
+```{r}
+#| message: false
+library(tidyverse)
+
+data_path <- "data/video_view.csv"
+
+if (!file.exists(data_path)) {
+  dir.create("data", showWarnings = FALSE)
+  data_url <- paste0(
+    "https://raw.githubusercontent.com/hannesdatta/",
+    "course-dprep/refs/heads/main/material/tutorials/r-bootcamp-rev/",
+    "video_view.csv"
+  )
+  download.file(data_url, data_path)
+}
+
+videos <- read_csv(data_path)
+```
+
+## Inspect
+
+```{r}
+glimpse(videos)
+```
+
+## Creator summary
+
+How do creator-level metrics differ across creators?
+
+```{r}
+creator_summary <- videos %>%
+  group_by(creator_id) %>%
+  summarise(
+    videos_n          = n(),
+    impressions_total = sum(impressions_n, na.rm = TRUE),
+    watch_rate_avg    = mean(watch_rate, na.rm = TRUE)
+  ) %>%
+  arrange(desc(impressions_total))
+
+head(creator_summary, 10)
+```
+
+## Top-watched videos
+
+Which reasonably-visible videos have the highest watch rate?
+
+```{r}
+top_watch <- videos %>%
+  select(video_id, creator_id, impressions_n, watch_rate) %>%
+  filter(impressions_n >= 50) %>%
+  arrange(desc(watch_rate))
+
+head(top_watch, 10)
+```
+
+## Creator engagement
+
+Ranking creators by average engagement (`watched_n / impressions_n`) instead of
+raw reach.
+
+```{r}
+creator_engagement <- videos %>%
+  mutate(engagement = watched_n / impressions_n) %>%
+  group_by(creator_id) %>%
+  summarise(mean_engagement = mean(engagement, na.rm = TRUE)) %>%
+  arrange(desc(mean_engagement))
+
+head(creator_engagement, 10)
+```

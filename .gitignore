@@ -1,0 +1,19 @@
+# R
+.Rhistory
+.RData
+.Rproj.user/
+
+# Data
+*.csv
+data/*
+
+# Quarto
+/.quarto/
+*_files/
+src/report.html
+
+# Output artifacts (recreated when the analysis runs)
+tmp/
+
+# macOS
+.DS_Store
