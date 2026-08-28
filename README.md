@@ -1,7 +1,7 @@
-# Project title
-
+# Video project
+  Javi is here 
 ## Goal
-Short project objective.
+- analyse TikTok video's 
 
 ## Data
 - Main file: video_view.csv
@@ -17,3 +17,5 @@ Short project objective.
 
 ## Expected output
 - report.html
+
+
